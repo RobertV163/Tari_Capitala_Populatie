@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Countries</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: rgb(255, 255, 255);
+            padding: 20px;
+            width: 50%;
+        }
+        .search-box {
+            width: 90%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #f9f9f9;
+            margin-bottom: 10px;
+        }
+        .country-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e90e0e;
+        }
+        .flag {
+            width: 30px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .info {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Live Search Demo</h2>
+        <input type="text" id="search-box" class="search-box" placeholder="Scrie numele unei țări" oninput="searchCountry()">
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function searchCountry() {
+            const query = document.getElementById("search-box").value.trim();
+            const resultContainer = document.getElementById("results");
+            resultContainer.innerHTML = query ? "Căutăm..." : "";
+
+            if (!query) return;
+
+            try {
+                const response = await fetch(`https://restcountries.com/v3.1/name/${query}`);
+                const countries = await response.json();
+                resultContainer.innerHTML = countries.map(country => `
+                    <div class="country-result">
+                        <div>
+                            <img src="${country.flags.svg}" alt="Steagul ${country.name.common}" class="flag">
+                            <strong>${country.name.common}</strong>
+                        </div>
+                        <div class="info">
+                            <span>Capitală: ${country.capital ? country.capital[0] : "N/A"}</span><br>
+                            <span>Populație: ${country.population.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `).join('') || "Nicio țară găsită.";
+            } catch {
+                resultContainer.innerHTML = "Eroare: Țara nu a fost găsită.";
+            }
+        }
+    </script>
+</body>
+</html>
